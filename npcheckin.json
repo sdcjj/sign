@@ -1,0 +1,11 @@
+{
+    "cookie_cloud":{
+        "domain":"http://127.0.0.1:8088/",
+        "uuid":"xxx",
+        "pwd":"xxx"
+    },
+    "sleep":2,
+    "cloud_sites":[
+        "xxx.xx"
+    ]
+}
