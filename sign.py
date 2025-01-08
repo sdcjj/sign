@@ -5,7 +5,7 @@ from PyCookieCloud import PyCookieCloud
 
 
 def load_config():
-    with open("npcheckin.json", "r", encoding="utf-8") as file:
+    with open("sign.json", "r", encoding="utf-8") as file:
         return json.load(file)
 
 def load_clound(ccConfig,cloud_sites):
