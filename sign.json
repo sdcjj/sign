@@ -6,6 +6,7 @@
     },
     "sleep":2,
     "cloud_sites":[
-        "xxx.xx"
+        "xxx.xx",
+        "填写不带http://的站点域名"
     ]
 }
