@@ -8,7 +8,7 @@ def load_config():
     with open("sign.json", "r", encoding="utf-8") as file:
         return json.load(file)
 
-def load_clound(ccConfig,cloud_sites):
+def load_clound(ccConfig):
     cookie_cloud = PyCookieCloud(ccConfig.get("domain"), ccConfig.get("uuid"), ccConfig.get("pwd"))
     the_key = cookie_cloud.get_the_key()
     if not the_key:
@@ -31,8 +31,7 @@ def load_clound(ccConfig,cloud_sites):
             formatted_cookies.append(f"{cookie['name']}={cookie['value']}")
 
         result = ';'.join(formatted_cookies)
-        if("c_secure_uid" in result and site in cloud_sites):
-            checkMap[site]=result
+        checkMap[site]=result
     return checkMap
 
 def is_check_in(resp):
@@ -63,7 +62,7 @@ def buildUrl(site):
         checkin_url = f"{domain}{path}"
     return checkin_url
 
-def checkin(site):
+def get_response(site):
     domain = site.get("domain", "").strip()
     if domain == "":
         print(f"domain is empty {site}")
@@ -78,29 +77,44 @@ def checkin(site):
                 "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Edg/122.0.0.0",
                 "Cookie": site.get("cookie"),
             },
-            timeout=3,
+            timeout=30,
         )
 
-        if(not is_check_in(resp)):
-            print(f"{domain}签到失败")
-            print(resp.text)
-        else:
-            print(f"{domain}签到成功")
+        return resp
     except Exception as e:
-        print(f"{domain}签到失败")
+        print(f"{domain}访问失败")
         print(e)
+    return None
 
 
 conf = load_config()
 sleep = conf["sleep"]
 
-cloud_sites = conf["cloud_sites"]
 cookie_cloud = conf["cookie_cloud"]
-checkMap= load_clound(cookie_cloud,cloud_sites)
-for site in checkMap:
+checkMap= load_clound(cookie_cloud)
+
+cloud_sites = conf["cloud_sites"]
+for site in cloud_sites:
     chekcData={
         "domain":f"https://{site}/",
         "cookie":checkMap.get(site),
     }
-    checkin(chekcData)
+    resp= get_response(chekcData)
+    if(not is_check_in(resp)):
+        print(f"{site}签到失败")
+        print(resp.text)
+    else:
+        print(f"{site}签到成功")
+    time.sleep(sleep)
+
+
+path_sites = conf["path_sites"]
+for path_site in path_sites:
+    site = path_site.get("domain")
+    chekcData={
+        "domain":f"{path_site.get("scheme")}://{site}/",
+        "path":path_site.get("path"),
+        "cookie":checkMap.get(site),
+    }
+    get_response(chekcData)
     time.sleep(sleep)

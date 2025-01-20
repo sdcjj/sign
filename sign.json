@@ -8,5 +8,12 @@
     "cloud_sites":[
         "xxx.xx",
         "填写不带http://的站点域名"
+    ],
+    "path_sites":[
+        {
+            "scheme":"http",
+            "domain":"xxx.xx",
+            "path":"index.php"
+        }
     ]
 }
